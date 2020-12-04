@@ -18,7 +18,7 @@ public:
     int Start();
     std::tuple <char*, message> Listen();
     void Test();
-    int SendMessage(SOCKET s, player target, int cmd, std::string data);
-    int Send(SOCKET s, player target, int cmd, char* data);
+    int SendMessage(player target, int cmd, std::string data);
+    int Send(player target, int cmd, char* data);
     int End();
 };

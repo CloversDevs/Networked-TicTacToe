@@ -77,20 +77,9 @@ void CustomServer::Test()
             memcpy(&source->socketAddr, &std::get<1>(playerMessage), sizeof(std::get<1>(playerMessage)));
             players.push_back(*source);
 
-            // Accept a client socket
-            auto ClientSocket = accept(listening, NULL, NULL);
-            if (ClientSocket == INVALID_SOCKET) {
-                std::cout << "Accept failed with error: " << WSAGetLastError() << std::endl;
-                closesocket(listening);
-                WSACleanup();
-                return;
-            }
-            else {
-                std::cout << "New Client!" << std::endl;
-            }
             cout << "Player, I need your name!" << endl;
             string s = "Hello";
-            SendMessage(ClientSocket, *source, EServer_RequestName, s);
+            SendMessage(*source, EServer_RequestName, s);
             cout << "Name requested!" << endl;
             return;
         }
@@ -107,13 +96,13 @@ void CustomServer::Test()
 
     End();
 }
-int CustomServer::SendMessage(SOCKET s, player target, int cmd, std::string data)
+int CustomServer::SendMessage(player target, int cmd, std::string data)
 {
     char* cstr = new char[data.length() + 1];
     strcpy_s(cstr, data.length() + 1, data.c_str());
-    return Send(s, target, cmd, cstr);
+    return Send(target, cmd, cstr);
 }
-int CustomServer::Send(SOCKET s, player target, int cmd, char* data)
+int CustomServer::Send(player target, int cmd, char* data)
 {
     message msg = message();
     msg.cmd = cmd;
@@ -121,7 +110,7 @@ int CustomServer::Send(SOCKET s, player target, int cmd, char* data)
     strcpy_s(msg.data, 6, myWord);
 
     std::cout << "Sending " << msg.data;
-    int sendOk = sendto(s, (char*)&msg, sizeof(msg), 0, &(target.socketAddr), sizeof(target.socketAddr));
+    int sendOk = sendto(listening, (char*)&msg, sizeof(msg), 0, &(target.socketAddr), sizeof(target.socketAddr));
     cout << "sent bytes: " << sendOk << endl;
 
     if (sendOk == SOCKET_ERROR)
