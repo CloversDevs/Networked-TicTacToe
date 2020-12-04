@@ -26,7 +26,7 @@ int CustomClient::Start()
 
     //---------------------------------------------
     // Create a socket for sending data
-    _sendSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_TCP);
+    _sendSocket = socket(AF_INET, SOCK_DGRAM, 0);
     if (_sendSocket == INVALID_SOCKET) {
         wprintf(L"socket failed with error: %ld\n", WSAGetLastError());
         WSACleanup();

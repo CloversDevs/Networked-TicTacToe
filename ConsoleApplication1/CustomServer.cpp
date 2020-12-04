@@ -17,7 +17,7 @@ int CustomServer::Start()
     }
 
     // Create listening socket
-    listening = socket(AF_INET, SOCK_DGRAM, IPPROTO_TCP);
+    listening = socket(AF_INET, SOCK_DGRAM, 0);
 
     if (listening == INVALID_SOCKET) {
         cerr << "Invalid socket" << endl;
