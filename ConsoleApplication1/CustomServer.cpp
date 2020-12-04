@@ -37,11 +37,9 @@ int CustomServer::Start()
         return -1;
     }
 }
-std::tuple <char*, message> CustomServer::Listen()
+message CustomServer::Listen(char* dat)
 {
-    // Receive data
     message msg;
-
     sockaddr client;
     int clientSize = sizeof(client);
     memset((char*)&msg, 0, sizeof(msg));
@@ -50,16 +48,29 @@ std::tuple <char*, message> CustomServer::Listen()
     // Block until receiving bytes from sowmehere
     cout << "SERVER IS LISTENING..." << endl;
     int bytesIn = recvfrom(listening, (char*)&msg, sizeof(msg), 0, &client, &clientSize);
-    return std::make_tuple(client.sa_data, msg);
+    
+    for (int i = 0; i < 256; i++)
+    {
+        dat[i] = client.sa_data[i];
+        if (client.sa_data[i] == '\0')
+        {
+            cout << "BREAK AT '" << i << "'" << endl;
+            break;
+        }
+    }
+    cout << "RECEIVED FROM CLIENT WITH ADDRESS DATA '" << client.sa_data << "'"<< endl;
+    return msg;
 }
+
 void CustomServer::Test()
 {
     Start();
     while (true)
     {
-        auto playerMessage = Listen();
-        auto sockData = std::get<0>(playerMessage);
-        auto msg = std::get<1>(playerMessage);
+        char sockData[14];
+        cout << "START DAT" << sockData << endl;
+        auto msg = Listen(sockData);
+        cout << "RECEIVED FROM CLIENT WITH ADDRESS DATA RESULT '" << sockData << "'" << endl;
 
         bool playerExists = false;
         player* source = NULL;

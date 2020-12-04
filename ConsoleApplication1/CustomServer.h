@@ -16,7 +16,7 @@ private:
 public:
     CustomServer();
     int Start();
-    std::tuple <char*, message> Listen();
+    message Listen(char* dat);
     void Test();
     int SendMessage(player target, int cmd, std::string data);
     int Send(player target, int cmd, char* data);
