@@ -148,9 +148,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ConsoleApplication1.cpp" />
+    <ClCompile Include="CustomClient.cpp" />
+    <ClCompile Include="CustomServer.cpp" />
+    <ClCompile Include="States.cpp" />
+    <ClCompile Include="StateTypes.cpp" />
     <ClCompile Include="TicTacToeGame.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CustomServer.h" />
+    <ClInclude Include="DataStructures.h" />
+    <ClInclude Include="MessageTypes.h" />
+    <ClInclude Include="CustomClient.h" />
+    <ClInclude Include="StateTypes.h" />
     <ClInclude Include="TicTacToeGame.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
