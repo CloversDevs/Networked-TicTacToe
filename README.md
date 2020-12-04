@@ -1,4 +1,2 @@
-# WinSock-Sample
-Simple WinSock samples: TCP client and server, UDP client and server
-
-Client sends name of file and server returns file's size in bytes to client
+# Simple Networked TicTacToE
+Forked from matostr98's WinSock-Sample for reference 
