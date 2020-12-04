@@ -58,13 +58,15 @@ void CustomServer::Test()
     while (true)
     {
         auto playerMessage = Listen();
+        auto sockData = std::get<0>(playerMessage);
+        auto msg = std::get<1>(playerMessage);
 
         bool playerExists = false;
         player* source = NULL;
         for (auto& p : players)
         {
-            if (memcmp(p.socketAddr.sa_data, std::get<0>(playerMessage), 6) == 0) {
-                cout << "Player Returns! " << std::get<0>(playerMessage) << endl;
+            if (memcmp(p.socketAddr.sa_data, sockData, 6) == 0) {
+                cout << "Player Returns! " << sockData << endl;
                 source = &p;
                 break;
             }
@@ -74,7 +76,7 @@ void CustomServer::Test()
         {
             source = new player();
             //memcpy(p.name, msg.data, sizeof p.name);
-            memcpy(&source->socketAddr, &std::get<1>(playerMessage), sizeof(std::get<1>(playerMessage)));
+            memcpy(&source->socketAddr, &msg, sizeof(msg));
             players.push_back(*source);
 
             cout << "Player, I need your name!" << endl;
@@ -83,7 +85,7 @@ void CustomServer::Test()
             cout << "Name requested!" << endl;
             return;
         }
-        auto msg = std::get<1>(playerMessage);
+        
         //;
         switch (msg.cmd)
         {
