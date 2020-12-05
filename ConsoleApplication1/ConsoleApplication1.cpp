@@ -77,10 +77,6 @@ int ClientState()
             cli.SendMessage(EClient_Name, input);
             break;
         }
-        case EServer_Lobby:
-            system("CLS");
-            DebugLog("Waiting for an opponent!");
-            break;
         case EServer_MatchStart:
             system("CLS");
             std::cout << "Playing against: " << response.data;
