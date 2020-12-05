@@ -67,7 +67,7 @@ public:
         0,0,0,
         0,0,0,
     };
-    int currentPlayer = 1;
+    int currentTeam = 1;
     TicTac()
     {
 
@@ -86,10 +86,6 @@ public:
     TicTacState GetState()
     {
         int won = TestWhoWon();
-        if (won == -1)
-        {
-            return EDRAW;
-        }
 
         if (won == 1)
         {
@@ -112,15 +108,26 @@ public:
     bool isFull()
     {
         for (int i = 0; i < 9; i++) {
-            if (board == 0) {
+            if (board[i] == 0) {
                 return false;
             }
         }
         return true;
     }
+
     bool TryPlay(int player, int position)
     {
-        if (player != currentPlayer)
+        if (isFull())
+        {
+            return false;
+        }
+
+        if (TestWhoWon() > 0)
+        {
+            return false;
+        }
+
+        if (player != currentTeam)
         {
             return false;
         }
@@ -132,13 +139,13 @@ public:
         
         board[position] = player;
 
-        if (currentPlayer == 1)
+        if (currentTeam == 1)
         {
-            currentPlayer = 2;
+            currentTeam = 2;
         }
         else
         {
-            currentPlayer = 1;
+            currentTeam = 1;
         }
     }
     int TestWhoWon()

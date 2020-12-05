@@ -49,7 +49,7 @@ int ServerState()
     DebugLog(" Enter Server state");
     auto server = CustomServer();
     //CreateServer();
-    server.Test();
+    server.Run();
     return EStartState;
 }
 
@@ -62,6 +62,7 @@ int ClientState()
     TicTac ticTac = TicTac();
 
     cli.SendMessage(EClient_Hello, "Hello");
+    string opponentName = "NoName";
     while (connected)
     {
         message response = cli.Listen();
@@ -78,45 +79,83 @@ int ClientState()
         }
         case EServer_Lobby:
             system("CLS");
-            DebugLog("Waiting for opponent!");
+            DebugLog("Waiting for an opponent!");
             break;
         case EServer_MatchStart:
             system("CLS");
-            DebugLog("Playing against x!");
+            std::cout << "Playing against: " << response.data;
+            opponentName = response.data;
             break;
         case EServer_MatchUpdate:
         {
             system("CLS");
-            DebugLog("Update!");
+            DebugLog("Playing against " + opponentName);
+            std::string boardDescription = std::string();
+
+            for (auto i = 1; i < 10; i++)
+            {
+                boardDescription += response.data[i];
+            }
+            ticTac = TicTac(boardDescription);
+            ticTac.Render();
             if (response.data[0] == '1')
             {
                 DebugLog("It's my turn!");
+                string input = string();
+                std::cin >> input;
+                byte in = 256;
+                if (input == "1")
+                {
+                    in = 0;
+                }
+                if (input == "2")
+                {
+                    in = 1;
+                }
+                if (input == "3")
+                {
+                    in = 2;
+                }
+                if (input == "4")
+                {
+                    in = 3;
+                }
+                if (input == "5")
+                {
+                    in = 4;
+                }
+                if (input == "6")
+                {
+                    in = 5;
+                }
+
+                if (input == "7")
+                {
+                    in = 6;
+                }
+
+                if (input == "8")
+                {
+                    in = 7;
+                }
+                if (input == "9")
+                {
+                    in = 8;
+                }
+                char in2 = (char)in;
+                char* pChar = &in2;
+                cout << "Sending '" << pChar[0] << "'";
+                cli.SendMessage(EClient_RequestMove, pChar);
+                
             }
             else {
                 DebugLog("It's the opponent's turn!");
             }
-            std::string boardDescription = std::string();
-
-            boardDescription += response.data[1];
-            boardDescription += response.data[2];
-            boardDescription += response.data[3];
-            boardDescription += response.data[4];
-            boardDescription += response.data[5];
-            boardDescription += response.data[6];
-            boardDescription += response.data[7];
-            boardDescription += response.data[8];
-            boardDescription += response.data[9];
-            ticTac = TicTac(boardDescription);
-            ticTac.Render();
-            string input = string();
-            std::cin >> input;
-            cli.SendMessage(EClient_RequestMove, input);
             break;
         }
         case EServer_MatchLost:
         {
             system("CLS");
-
             std::string boardDescription = std::string();
             boardDescription += response.data[0];
             boardDescription += response.data[1];
@@ -131,17 +170,22 @@ int ClientState()
             ticTac = TicTac(boardDescription);
             ticTac.Render();
 
+            bool validInput = false;
             string selection = "";
-            while (selection != "R" || selection != "Q") {
+            while (!validInput) {
                 DebugLog("You lost! [R]ematch or [Q]uit?");
                 std::cin >> selection;
+                validInput = selection == "R" || selection == "r" || selection == "Q" || selection == "q";
             }
-            if (selection == "R")
+            if (selection == "R" || selection == "r")
             {
-
+                cli.SendMessage(EClient_RequestRematch, " ");
             }
-            //ticTac = TicTac(msg.data);
-            //ticTac.Render();
+            else
+            {
+                cli.SendMessage(EClient_RejectRematch, " ");
+                connected = false;
+            }
             break;
         }
         case EServer_MatchWon:
@@ -160,34 +204,36 @@ int ClientState()
 
             ticTac = TicTac(boardDescription);
             ticTac.Render();
-            DebugLog("You won! [R]ematch or [Q]uit?");
-            //ticTac = TicTac(msg.data);
-            //ticTac.Render();
+            
+            bool validInput = false;
+            string selection = "";
+            while (!validInput) {
+                DebugLog("You won! [R]ematch or [Q]uit?");
+                std::cin >> selection;
+                validInput = selection == "R" || selection == "r" || selection == "Q" || selection == "q";
+            }
+            if (selection == "R" || selection == "r")
+            {
+                cli.SendMessage(EClient_RequestRematch, " ");
+            }
+            else
+            {
+                cli.SendMessage(EClient_RejectRematch, " ");
+                connected = false;
+            }
             break;
         }
         default:
             break;
         }
     }
-
-
-
     cli.End();
 
-    return EStartState;
+    return EExit;
 }
 
 int main()
 {
-    TicTac game = TicTac("000100200");
-
-    
-    game.Render();
-    if (!game.TryPlay(3, 1))
-    {
-        DebugLog("Invalid Move!");
-    }
-    game.Render();
     int currentState = EStartState;
     while (currentState != EExit)
     {
@@ -208,140 +254,3 @@ int main()
     }
     return 0;
 }
-
-
-/*
-int CreateServer()
-{
-    vector<player> players;
-
-
-    // Initialize WinSock
-    WSADATA data;
-    WORD ver = MAKEWORD(2, 2);
-    int wsOk = WSAStartup(ver, &data);
-    if (wsOk != 0) {
-        cerr << "Winsock initialization error" << endl;
-        return -1;
-    }
-
-    // Create listening socket
-    int listening = socket(AF_INET, SOCK_DGRAM, 0);
-
-    if (listening == INVALID_SOCKET) {
-        cerr << "Invalid socket" << endl;
-        return -1;
-    }
-
-    // Bind socket to ip-port pair
-    sockaddr_in hint;
-    hint.sin_family = AF_INET;
-    hint.sin_port = htons(8900);
-    hint.sin_addr.S_un.S_addr = ADDR_ANY;
-    // inet_pton(AF_INET, "127.0.0.1", &hint.sin_addr);
-
-    int bindResult = bind(listening, (sockaddr*)&hint, sizeof(hint));
-    if (bindResult == SOCKET_ERROR) {
-        cerr << "Socket binding failed" << endl;
-        return -1;
-    }
-
-
-
-    // Receive data
-    message msg;
-
-    sockaddr client;
-    int clientSize = sizeof(client);
-    player* sender = NULL;
-
-    while (true) {
-
-        memset((char*)&msg, 0, sizeof(msg));
-        memset(&client, 0, sizeof(client));
-
-        // Block until receiving bytes from sowmehere
-        cout << "SERVER IS LISTENING..." << endl;
-        int bytesIn = recvfrom(listening, (char*)&msg, sizeof(msg), 0, &client, &clientSize);
-
-        switch (msg.cmd)
-        {
-        case EClient_Hello:
-        {
-            bool alreadyExists = false;
-            for (auto& p : players)
-            {
-                if (memcmp(p.socketAddr.sa_data, client.sa_data, 6) == 0) {
-                    cout << "Player Returns! " << client.sa_data << endl;
-                    alreadyExists = true;
-                    break;
-                }
-            }
-            if (alreadyExists)
-            {
-
-            }
-            else {
-                cout << "nuevo jugador{" << client.sa_data << "}: " << msg.data << endl;
-                player pa = player();
-                //memcpy(p.name, msg.data, sizeof p.name);
-                memcpy(&pa.socketAddr, &client, clientSize);
-                players.push_back(pa);
-                cout << "jugadores en la sala: " << players.size() << endl;
-            }
-            break;
-        }
-        case EClient_Name:
-            for (auto& p : players)
-            {
-                if (memcmp(p.socketAddr.sa_data, client.sa_data, 6) == 0) {
-                    cout << "Player Set name! " << client.sa_data << endl;
-                    memcpy(p.name, msg.data, sizeof p.name);
-                    break;
-                }
-            }
-            cout << "Player not found!! " << endl;
-            break;
-        case 2:
-            for (auto& p : players)
-            {
-
-                if (memcmp(p.socketAddr.sa_data, client.sa_data, 6) == 0) {
-                    sender = &p;
-                    cout << p.name << " : " << msg.data << endl;
-                }
-
-                int sendOk = sendto(listening, (char*)&msg, sizeof(msg), 0, &(p.socketAddr), sizeof(sockaddr));
-                cout << "sent bytes: " << sendOk << endl;
-
-                if (sendOk == SOCKET_ERROR)
-                {
-                    cout << "Send error!" << sendOk;
-                    return -1;
-                }
-            }
-
-            //
-            //
-            //
-
-            // broadcast
-            if (sender != NULL) {
-                for (auto& p : players)
-                {
-                    int sendOk = sendto(listening, (char*)&msg, sizeof(msg), 0, &sender->socketAddr, sizeof(sockaddr));
-                    if (sendOk == SOCKET_ERROR) {
-                        cout << "Sending error!" << sendOk;
-                        return -1;
-                    }
-                }
-            };
-            break;
-            
-        default:
-            break;
-        }
-
-    }
-}
-*/

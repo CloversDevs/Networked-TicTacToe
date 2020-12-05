@@ -13,7 +13,9 @@ class CustomServer
 {
 private:
     std::vector<player> players;
-    player* waitingPlayer = NULL;
+    bool playerIsWaiting = false;
+    player waitingPlayer;
+    player incomingPlayer;
     std::vector<NetworkedMatch> currentGames;
     int listening;
     int playerIds = -1;
@@ -24,7 +26,7 @@ public:
     CustomServer();
     int Start();
     message Listen(char* dat);
-    void Test();
+    void Run();
     int SendMessage(player target, int cmd, std::string data);
     int Send(player target, int cmd, char* data);
     int End();
