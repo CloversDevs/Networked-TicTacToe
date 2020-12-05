@@ -150,6 +150,7 @@
     <ClCompile Include="ConsoleApplication1.cpp" />
     <ClCompile Include="CustomClient.cpp" />
     <ClCompile Include="CustomServer.cpp" />
+    <ClCompile Include="NetworkedMatch.cpp" />
     <ClCompile Include="States.cpp" />
     <ClCompile Include="StateTypes.cpp" />
     <ClCompile Include="TicTacToeGame.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="DataStructures.h" />
     <ClInclude Include="MessageTypes.h" />
     <ClInclude Include="CustomClient.h" />
+    <ClInclude Include="NetworkedMatch.h" />
     <ClInclude Include="StateTypes.h" />
     <ClInclude Include="TicTacToeGame.h" />
   </ItemGroup>

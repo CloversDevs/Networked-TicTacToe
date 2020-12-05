@@ -10,4 +10,6 @@ struct message {
 struct player {
     char name[16] = "undefined";
     sockaddr socketAddr;
+    int matchId = -1;
+    int playerId = -1;
 };

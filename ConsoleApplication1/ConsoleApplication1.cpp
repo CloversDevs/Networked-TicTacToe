@@ -69,6 +69,7 @@ int ClientState()
         {
         case EServer_RequestName:
         {
+            system("CLS");
             DebugLog("What's your name?");
             string input = string();
             std::cin >> input;
@@ -76,26 +77,94 @@ int ClientState()
             break;
         }
         case EServer_Lobby:
+            system("CLS");
             DebugLog("Waiting for opponent!");
             break;
         case EServer_MatchStart:
+            system("CLS");
             DebugLog("Playing against x!");
             break;
         case EServer_MatchUpdate:
+        {
+            system("CLS");
             DebugLog("Update!");
-            //ticTac = TicTac(msg.data);
-            //ticTac.Render();
+            if (response.data[0] == '1')
+            {
+                DebugLog("It's my turn!");
+            }
+            else {
+                DebugLog("It's the opponent's turn!");
+            }
+            std::string boardDescription = std::string();
+
+            boardDescription += response.data[1];
+            boardDescription += response.data[2];
+            boardDescription += response.data[3];
+            boardDescription += response.data[4];
+            boardDescription += response.data[5];
+            boardDescription += response.data[6];
+            boardDescription += response.data[7];
+            boardDescription += response.data[8];
+            boardDescription += response.data[9];
+            ticTac = TicTac(boardDescription);
+            ticTac.Render();
+            string input = string();
+            std::cin >> input;
+            cli.SendMessage(EClient_RequestMove, input);
             break;
+        }
         case EServer_MatchLost:
-            DebugLog("You lost! [R]ematch or [Q]uit?");
+        {
+            system("CLS");
+
+            std::string boardDescription = std::string();
+            boardDescription += response.data[0];
+            boardDescription += response.data[1];
+            boardDescription += response.data[2];
+            boardDescription += response.data[3];
+            boardDescription += response.data[4];
+            boardDescription += response.data[5];
+            boardDescription += response.data[6];
+            boardDescription += response.data[7];
+            boardDescription += response.data[8];
+
+            ticTac = TicTac(boardDescription);
+            ticTac.Render();
+
+            string selection = "";
+            while (selection != "R" || selection != "Q") {
+                DebugLog("You lost! [R]ematch or [Q]uit?");
+                std::cin >> selection;
+            }
+            if (selection == "R")
+            {
+
+            }
             //ticTac = TicTac(msg.data);
             //ticTac.Render();
             break;
+        }
         case EServer_MatchWon:
+        {
+            system("CLS");
+            std::string boardDescription = std::string();
+            boardDescription += response.data[0];
+            boardDescription += response.data[1];
+            boardDescription += response.data[2];
+            boardDescription += response.data[3];
+            boardDescription += response.data[4];
+            boardDescription += response.data[5];
+            boardDescription += response.data[6];
+            boardDescription += response.data[7];
+            boardDescription += response.data[8];
+
+            ticTac = TicTac(boardDescription);
+            ticTac.Render();
             DebugLog("You won! [R]ematch or [Q]uit?");
             //ticTac = TicTac(msg.data);
             //ticTac.Render();
             break;
+        }
         default:
             break;
         }
