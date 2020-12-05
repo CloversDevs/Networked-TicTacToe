@@ -53,8 +53,8 @@ int CustomServer::Start()
     sockaddr_in hint;
     hint.sin_family = AF_INET;
     hint.sin_port = htons(8900);
-    //hint.sin_addr.S_un.S_addr = ADDR_ANY;
-    inet_pton(AF_INET, "127.0.0.1", &hint.sin_addr);
+    hint.sin_addr.S_un.S_addr = ADDR_ANY;
+    //inet_pton(AF_INET, "127.0.0.1", &hint.sin_addr);
 
     int bindResult = bind(listening, (sockaddr*)&hint, sizeof(hint));
     if (bindResult == SOCKET_ERROR) {
